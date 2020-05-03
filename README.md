@@ -2,10 +2,8 @@
 
 > A module for generating cryptographically secure pseudo-random numbers.
 
-- backed by CSPRNG
 - no dependencies
 - no transpilation
-- minimalistic repository footprint
 - [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 - browser support via (Webpack/Rollup/Browserify)
 
@@ -14,16 +12,16 @@ This module is based on code [originally written](https://gist.github.com/sarcis
 ## Usage
 
 ```js
-const generate = require('pure-random-number')
+const randomNumber = require('pure-random-number')
 
-generate(10, 30)
+randomNumber(10, 30)
   .then(number => console.log('Your number is:', number))
   .catch(err => console.error(err))
 ```
 
 ## API
 
-### randomNumber(minimum, maximum, callback = null)
+### randomNumber(minimum, maximum)
 
 Returns a Promise that resolves to a random number within the specified range.
 
@@ -31,14 +29,6 @@ Note that the range is __inclusive__, and both numbers __must be integer values_
 
 * __minimum__: The lowest possible value in the range.
 * __maximum__: The highest possible value in the range. Inclusive.
-
-Optionally also accepts a nodeback as `cb`, but seriously, you should be using [Promises](https://gist.github.com/joepie91/791640557e3e5fd80861).
-
-### randomNumber.RandomGenerationError
-
-Any errors that occur during the random number generation process will be of this type. The error object will also have a `code` property, set to the string `"RandomGenerationError"`.
-
-The error message will provide more information, but this kind of error will generally mean that the arguments you've specified are somehow invalid.
 
 ## Changelog
 * __2.0.0__ (May 3, 2020): Removed dependencies and ported to standardjs
