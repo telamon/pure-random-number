@@ -1,8 +1,6 @@
 # pure-random-number
 
-> Hostile fork-over in progress, come back later :-)
-
-A module for generating cryptographically secure pseudo-random numbers.
+> A module for generating cryptographically secure pseudo-random numbers.
 
 - backed by CSPRNG
 - no dependencies
@@ -43,7 +41,7 @@ Any errors that occur during the random number generation process will be of thi
 The error message will provide more information, but this kind of error will generally mean that the arguments you've specified are somehow invalid.
 
 ## Changelog
-* __2.0.0__ (May 3, 2020): Purified repository
+* __2.0.0__ (May 3, 2020): Removed dependencies and ported to standardjs
 * __1.0.2__ (March 8, 2016): __*Security release!*__ Patched handling of large numbers; input values are now checked for `MIN_SAFE_INTEGER` and `MAX_SAFE_INTEGER`, and the correct bitwise operator is used (`>>>` rather than `>>`).
 * __1.0.1__ (March 8, 2016): Unimportant file cleanup.
 * __1.0.0__ (March 8, 2016): Initial release.
@@ -58,10 +56,4 @@ Parent license(s) permit change of terms for derivative works.
 Thus I now proclaim the license for this repository to be limited to
 `GNU AGPL version 3`
 
-(AGPL prevents Bigcorp from doing what I just did)
-
-
-#### Parent licenses:
-
-~~[WTFPL](http://www.wtfpl.net/txt/copying/) or [CC0](https://creativecommons.org/publicdomain/zero/1.0/), whichever you prefer. A donation and/or attribution are appreciated, but not required.~~
-
+> AGPL prevents non-open parties from doing what I just did
