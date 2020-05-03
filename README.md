@@ -1,51 +1,32 @@
-# random-number-csprng
+# pure-random-number
 
-A CommonJS module for generating cryptographically secure pseudo-random numbers.
+> Hostile fork-over in progress, come back later :-)
 
-Works in Node.js, and should work in the browser as well, using Webpack or Browserify.
+A module for generating cryptographically secure pseudo-random numbers.
+
+- backed by CSPRNG
+- no dependencies
+- no transpilation
+- minimalistic repository footprint
+- [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+- browser support via (Webpack/Rollup/Browserify)
+
 
 This module is based on code [originally written](https://gist.github.com/sarciszewski/88a7ed143204d17c3e42) by [Scott Arciszewski](https://github.com/sarciszewski), released under the WTFPL / CC0 / ZAP.
 
-## License
-
-[WTFPL](http://www.wtfpl.net/txt/copying/) or [CC0](https://creativecommons.org/publicdomain/zero/1.0/), whichever you prefer. A donation and/or attribution are appreciated, but not required.
-
-## Donate
-
-My income consists largely of donations for my projects. If this module is useful to you, consider [making a donation](http://cryto.net/~joepie91/donate.html)!
-
-You can donate using Bitcoin, PayPal, Flattr, cash-in-mail, SEPA transfers, and pretty much anything else.
-
-## Contributing
-
-Pull requests welcome. Please make sure your modifications are in line with the overall code style, and ensure that you're editing the files in `src/`, not those in `lib/`.
-
-Build tool of choice is `gulp`; simply run `gulp` while developing, and it will watch for changes.
-
-Be aware that by making a pull request, you agree to release your modifications under the licenses stated above.
-
 ## Usage
 
-This module will return the result asynchronously - this is necessary to avoid blocking your entire application while generating a number.
+```js
+const generate = require('pure-random-number')
 
-An example:
-
-```javascript
-var Promise = require("bluebird");
-var randomNumber = require("random-number-csprng");
-
-Promise.try(function() {
-	return randomNumber(10, 30);
-}).then(function(number) {
-	console.log("Your random number:", number);
-}).catch({code: "RandomGenerationError"}, function(err) {
-	console.log("Something went wrong!");
-});
+generate(10, 30)
+  .then(number => console.log.bind('Your number is:', number)
+  .catch(err => console.error(err))
 ```
 
 ## API
 
-### randomNumber(minimum, maximum, [cb])
+### randomNumber(minimum, maximum, callback = null)
 
 Returns a Promise that resolves to a random number within the specified range.
 
@@ -63,7 +44,25 @@ Any errors that occur during the random number generation process will be of thi
 The error message will provide more information, but this kind of error will generally mean that the arguments you've specified are somehow invalid.
 
 ## Changelog
-
+* __2.0.0__ (May 3, 2020): Purified repository
 * __1.0.2__ (March 8, 2016): __*Security release!*__ Patched handling of large numbers; input values are now checked for `MIN_SAFE_INTEGER` and `MAX_SAFE_INTEGER`, and the correct bitwise operator is used (`>>>` rather than `>>`).
 * __1.0.1__ (March 8, 2016): Unimportant file cleanup.
 * __1.0.0__ (March 8, 2016): Initial release.
+
+## Contributing
+
+Be aware that by making a pull request, you agree to release your modifications under the license stated below.
+
+## License
+
+Parent license(s) permit change of terms for derivative works.
+Thus I now proclaim the license for this repository to be limited to
+`GNU AGPL version 3`
+
+(AGPL prevents Bigcorp from doing what I just did)
+
+
+#### Parent licenses:
+
+~~[WTFPL](http://www.wtfpl.net/txt/copying/) or [CC0](https://creativecommons.org/publicdomain/zero/1.0/), whichever you prefer. A donation and/or attribution are appreciated, but not required.~~
+
