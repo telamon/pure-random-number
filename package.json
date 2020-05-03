@@ -6,6 +6,7 @@
   "scripts": {
     "test": "tape test.js",
     "lint": "standard",
+    "debug": "node inspect $(npm bin)/tape test.js",
     "prepublishOnly": "npm lint && npm test"
   },
   "repository": {
