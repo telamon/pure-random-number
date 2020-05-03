@@ -1,13 +1,13 @@
 {
   "name": "pure-random-number",
-  "version": "1.9.9",
+  "version": "2.0.0",
   "description": "A cryptographically secure generator for random numbers in a range.",
   "main": "index.js",
   "scripts": {
     "test": "tape test.js",
     "lint": "standard",
     "debug": "node inspect $(npm bin)/tape test.js",
-    "prepublishOnly": "npm lint && npm test"
+    "prepublishOnly": "standard && npm test"
   },
   "repository": {
     "type": "git",
