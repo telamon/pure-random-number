@@ -4,7 +4,9 @@
   "description": "A cryptographically secure generator for random numbers in a range.",
   "main": "index.js",
   "scripts": {
-    "lint": "standard"
+    "test": "tape test.js",
+    "lint": "standard",
+    "prepublishOnly": "npm lint && npm test"
   },
   "repository": {
     "type": "git",
@@ -19,6 +21,7 @@
   "author": "Tony Ivanov",
   "license": "AGPL-3.0-or-later",
   "devDependencies": {
-    "standard": "^14.3.3"
+    "standard": "^14.3.3",
+    "tape": "^5.0.0"
   }
 }

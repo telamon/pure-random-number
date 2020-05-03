@@ -11,7 +11,6 @@ A module for generating cryptographically secure pseudo-random numbers.
 - [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 - browser support via (Webpack/Rollup/Browserify)
 
-
 This module is based on code [originally written](https://gist.github.com/sarciszewski/88a7ed143204d17c3e42) by [Scott Arciszewski](https://github.com/sarciszewski), released under the WTFPL / CC0 / ZAP.
 
 ## Usage
@@ -20,7 +19,7 @@ This module is based on code [originally written](https://gist.github.com/sarcis
 const generate = require('pure-random-number')
 
 generate(10, 30)
-  .then(number => console.log.bind('Your number is:', number)
+  .then(number => console.log('Your number is:', number))
   .catch(err => console.error(err))
 ```
 
