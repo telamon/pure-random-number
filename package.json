@@ -1,6 +1,6 @@
 {
   "name": "pure-random-number",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "A cryptographically secure generator for random numbers in a range.",
   "main": "index.js",
   "scripts": {
