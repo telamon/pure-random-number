@@ -1,13 +1,27 @@
 const test = require('tape')
 
 const gen = require('.')
-
+const { randomSync } = gen
 test('generate random number', async t => {
   try {
-    const n = await gen(0, 6)
+    const n = await gen(1, 7)
     console.info('Random', n)
-    t.ok(n > 0)
-    t.ok(n <= 6)
+    t.ok(n >= 1)
+    t.ok(n <= 7)
+  } catch (err) {
+    t.error(err)
+  }
+  t.end()
+})
+
+// Async is cool but sometimes a synchronized variant is required
+// as a drop-in replacement for Math.random()
+test('generate syncronized random number', t => {
+  try {
+    const n = randomSync(1, 7)
+    console.info('Random', n)
+    t.ok(n >= 1)
+    t.ok(n <= 7)
   } catch (err) {
     t.error(err)
   }

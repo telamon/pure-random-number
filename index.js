@@ -98,9 +98,41 @@ async function secureRandomNumber (minimum, maximum) {
      * add the `minimum` here. */
     return minimum + randomValue
   } else {
+    // TODO: use a loop instead of recursing, otherwise we're just wasting
+    //  resources on rerunning all validations.
+
     /* Outside of the acceptable range, throw it away and try again.
      * We don't try any modulo tricks, as this would introduce bias. */
     return secureRandomNumber(minimum, maximum)
   }
 }
+
+function randomSync (minimum, maximum) {
+  // TODO: Considering to remove this boilerplate in favour of less maintenence.
+  if (typeof randomBytes !== 'function') throw new Error('NoRandomSource')
+  if (minimum == null) throw new TypeError('MinNotNumber')
+  if (maximum == null) throw new TypeError('MaxNotNumber')
+  if (minimum % 1 !== 0) throw new RangeError('MinNotInteger')
+  if (maximum % 1 !== 0) throw new RangeError('MaxNotInteger')
+  if (!(maximum > minimum)) throw new RangeError('MinHigherThanMax')
+  if (!isSafeInteger(minimum)) throw new RangeError('The minimum value must be inbetween MIN_SAFE_INTEGER and MAX_SAFE_INTEGER.')
+  if (!isSafeInteger(maximum)) throw new RangeError('The maximum value must be inbetween MIN_SAFE_INTEGER and MAX_SAFE_INTEGER.')
+
+  const range = maximum - minimum
+  const { bytesNeeded, mask } = calculateParameters(range)
+  // This variant uses a plain old loop instead of recursion.
+  while (true) {
+    const bytes = randomBytes(bytesNeeded)
+    let randomValue = 0
+    for (let i = 0; i < bytesNeeded; i++) {
+      randomValue |= (bytes[i] << (8 * i))
+    }
+    randomValue = randomValue & mask
+    if (randomValue <= range) {
+      return minimum + randomValue
+    }
+  }
+}
+
 module.exports = secureRandomNumber
+module.exports.randomSync = randomSync
