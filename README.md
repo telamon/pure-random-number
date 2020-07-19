@@ -15,7 +15,7 @@ Sync:
 ```js
 const { randomSync } = require('pure-random-number')
 
-const n = randomNumber(10, 30)
+const n = randomSync(10, 30)
 console.log('Secure unbiased random number:', n)
 ```
 
