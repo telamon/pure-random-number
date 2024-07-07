@@ -1,7 +1,14 @@
 import test from 'tape'
 import crypto from 'node:crypto'
-import { randomNumber } from './index.js'
+import { randomNumber, bytesNeeded, randomSeedNumber } from './index.js'
 globalThis.crypto ||= crypto
+
+test('functional', async t => {
+  t.equal(bytesNeeded(1, 6), 1)
+  let n = -1
+  while (n < 0) n = randomSeedNumber(crypto.randomBytes(32), 1, 6)
+  t.ok(Number.isSafeInteger(n) && n >= 1 && n <= 6)
+})
 
 test('generate random number', async t => {
   try {

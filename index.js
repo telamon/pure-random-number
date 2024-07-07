@@ -28,13 +28,16 @@ export async function randomNumber (minimum = 1, maximum = 6, generator = random
  * Extracts a random positive integer from seed,
  * use exported function bytesNeeded() to approximate amount of bytes
  * that will be consumed.
+ *
+ * Returns -1 if provided seed results in a biased number,
+ * generate a new seed and call again.
+ *
  * @param {Uint8Array} seed Random bytes
  * @param {number} minimum Minium value positive integer
  * @param {number} maximum Minimum value positive integer
- * @returns {number} A random positive integer
+ * @returns {number} A random positive integer or -1 on failure
  */
 export function randomSeedNumber (seed, minimum = 1, maximum = 6) {
-  if (!(seed instanceof Uint8Array)) throw new Error('Expected seed to be a Uint8Array')
   if (!Number.isSafeInteger(minimum) || minimum < 0) throw new Error('MinNotSafePositiveInteger')
   if (!Number.isSafeInteger(maximum) || maximum < 0) throw new Error('MaxNotSafePositiveInteger')
   if (!(maximum > minimum)) throw new RangeError('MinHigherThanMax')
@@ -42,7 +45,7 @@ export function randomSeedNumber (seed, minimum = 1, maximum = 6) {
   const range = maximum - minimum
   const { bytesNeeded, mask } = calculateParameters(range)
   if (seed.length < bytesNeeded) throw new Error('Seed to short')
-  const bytes = seed
+  const bytes = toU8(seed)
   let randomValue = 0
   /* Turn the random bytes into an integer, using bitwise operations. */
   for (let i = 0; i < bytesNeeded; i++) {
@@ -122,4 +125,19 @@ function calculateParameters (range) {
     range = range >>> 1 /* 0x01000000 -> 0x00100000 */
   }
   return { bitsNeeded, bytesNeeded, mask }
+}
+
+/**
+ * Normalize buffers to Uint8Array or throw
+ * @param {ArrayBuffer|Uint8Array|Buffer} o
+ * @returns Uint8Array
+ */
+export function toU8 (o) {
+  if (o instanceof ArrayBuffer) return new Uint8Array(o)
+  if (o instanceof Uint8Array) return o
+  // node:Buffer to Uint8Array
+  if (!(o instanceof Uint8Array) && o?.buffer) {
+    return new Uint8Array(o.buffer, o.byteOffset, o.byteLength)
+  }
+  throw new Error('Expected Uint8Array')
 }
