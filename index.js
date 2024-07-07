@@ -5,6 +5,7 @@
  * @param {number} minimum Minium value integer
  * @param {number} maximum Minimum value integer
  * @param {(n_bytes: number) => Promise<Uint8Array[n_bytes]>} generator Optional generator function
+ * @returns {number} A random number
  */
 export async function randomNumber (minimum = 1, maximum = 6, generator = randomBytes) {
   if (typeof generator !== 'function') throw new Error('NoRandomSource')
@@ -49,6 +50,17 @@ export async function randomNumber (minimum = 1, maximum = 6, generator = random
       return minimum + randomValue
     }
   }
+}
+
+/**
+ * Calculates the amount of entropy required
+ * for a given number range.
+ * @param {number} min Integer
+ * @param {number} max Integer
+ * @returns {number} number of bytes
+ */
+export function bytesNeeded (min, max) {
+  return calculateParameters(max - min).bytesNeeded
 }
 
 function randomBytes (n) {
