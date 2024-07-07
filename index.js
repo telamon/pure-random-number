@@ -1,54 +1,75 @@
 /**
- * Extracts a stable random integer from random seed,
+ * Generates a stable random positive integer.
+ * The range is inclusive.
  * The optional generator function might be invoked multiple times until
  * a secure number is found.
- * @param {number} minimum Minium value integer
- * @param {number} maximum Minimum value integer
+ * @param {number} minimum Minium value positive integer
+ * @param {number} maximum Minimum value positive integer
  * @param {(n_bytes: number) => Promise<Uint8Array[n_bytes]>} generator Optional generator function
- * @returns {number} A random number
+ * @returns {number} A random positive integer
  */
 export async function randomNumber (minimum = 1, maximum = 6, generator = randomBytes) {
-  if (typeof generator !== 'function') throw new Error('NoRandomSource')
-  if (minimum == null) throw new TypeError('MinNotNumber')
-  if (maximum == null) throw new TypeError('MaxNotNumber')
-  if (minimum % 1 !== 0) throw new RangeError('MinNotInteger')
-  if (maximum % 1 !== 0) throw new RangeError('MaxNotInteger')
+  if (typeof generator !== 'function') throw new Error('Expected generator to be a function')
+  if (!Number.isSafeInteger(minimum) || minimum < 0) throw new Error('MinNotSafePositiveInteger')
+  if (!Number.isSafeInteger(maximum) || maximum < 0) throw new Error('MaxNotSafePositiveInteger')
   if (!(maximum > minimum)) throw new RangeError('MinHigherThanMax')
-  if (!isSafeInteger(minimum)) throw new RangeError('The minimum value must be inbetween MIN_SAFE_INTEGER and MAX_SAFE_INTEGER.')
-  if (!isSafeInteger(maximum)) throw new RangeError('The maximum value must be inbetween MIN_SAFE_INTEGER and MAX_SAFE_INTEGER.')
+  const range = maximum - minimum
+  const { bytesNeeded } = calculateParameters(range)
+
+  while (true) {
+    const bytes = await generator(bytesNeeded)
+    const n = randomSeedNumber(bytes, minimum, maximum)
+    if (n === -1) continue // re-roll
+    return n
+  }
+}
+
+/**
+ * Extracts a random positive integer from seed,
+ * use exported function bytesNeeded() to approximate amount of bytes
+ * that will be consumed.
+ * @param {Uint8Array} seed Random bytes
+ * @param {number} minimum Minium value positive integer
+ * @param {number} maximum Minimum value positive integer
+ * @returns {number} A random positive integer
+ */
+export function randomSeedNumber (seed, minimum = 1, maximum = 6) {
+  if (!(seed instanceof Uint8Array)) throw new Error('Expected seed to be a Uint8Array')
+  if (!Number.isSafeInteger(minimum) || minimum < 0) throw new Error('MinNotSafePositiveInteger')
+  if (!Number.isSafeInteger(maximum) || maximum < 0) throw new Error('MaxNotSafePositiveInteger')
+  if (!(maximum > minimum)) throw new RangeError('MinHigherThanMax')
 
   const range = maximum - minimum
   const { bytesNeeded, mask } = calculateParameters(range)
-  while (true) {
-    const bytes = await generator(bytesNeeded)
-    let randomValue = 0
-
-    /* Turn the random bytes into an integer, using bitwise operations. */
-    for (let i = 0; i < bytesNeeded; i++) {
-      randomValue |= (bytes[i] << (8 * i))
-    }
-
-    /* We apply the mask to reduce the amount of attempts we might need
-     * to make to get a number that is in range. This is somewhat like
-     * the commonly used 'modulo trick', but without the bias:
-     *
-     *   "Let's say you invoke secure_rand(0, 60). When the other code
-     *    generates a random integer, you might get 243. If you take
-     *    (243 & 63)-- noting that the mask is 63-- you get 51. Since
-     *    51 is less than 60, we can return this without bias. If we
-     *    got 255, then 255 & 63 is 63. 63 > 60, so we try again.
-     *
-     *    The purpose of the mask is to reduce the number of random
-     *    numbers discarded for the sake of ensuring an unbiased
-     *    distribution. In the example above, 243 would discard, but
-     *    (243 & 63) is in the range of 0 and 60."
-     *
-     *   (Source: Scott Arciszewski)
-     */
-    randomValue = randomValue & mask
-    if (randomValue <= range) {
-      return minimum + randomValue
-    }
+  if (seed.length < bytesNeeded) throw new Error('Seed to short')
+  const bytes = seed
+  let randomValue = 0
+  /* Turn the random bytes into an integer, using bitwise operations. */
+  for (let i = 0; i < bytesNeeded; i++) {
+    randomValue |= (bytes[i] << (8 * i))
+  }
+  /* We apply the mask to reduce the amount of attempts we might need
+   * to make to get a number that is in range. This is somewhat like
+   * the commonly used 'modulo trick', but without the bias:
+   *
+   *   "Let's say you invoke secure_rand(0, 60). When the other code
+   *    generates a random integer, you might get 243. If you take
+   *    (243 & 63)-- noting that the mask is 63-- you get 51. Since
+   *    51 is less than 60, we can return this without bias. If we
+   *    got 255, then 255 & 63 is 63. 63 > 60, so we try again.
+   *
+   *    The purpose of the mask is to reduce the number of random
+   *    numbers discarded for the sake of ensuring an unbiased
+   *    distribution. In the example above, 243 would discard, but
+   *    (243 & 63) is in the range of 0 and 60."
+   *
+   *   (Source: Scott Arciszewski)
+   */
+  randomValue = randomValue & mask
+  if (randomValue <= range) {
+    return minimum + randomValue
+  } else {
+    return -1
   }
 }
 
@@ -101,14 +122,4 @@ function calculateParameters (range) {
     range = range >>> 1 /* 0x01000000 -> 0x00100000 */
   }
   return { bitsNeeded, bytesNeeded, mask }
-}
-
-function isSafeInteger (n) {
-  /* We hardcode the values for the following:
-   *
-   * https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Number/MIN_SAFE_INTEGER
-   * https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
-   * ... as Babel does not appear to transpile them, despite being ES6.
-   */
-  return !(n < -9007199254740991 || n > 9007199254740991)
 }
