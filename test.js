@@ -1,31 +1,17 @@
-const test = require('tape')
+import test from 'tape'
+import crypto from 'node:crypto'
+import { randomNumber } from './index.js'
+globalThis.crypto ||= crypto
 
-const gen = require('.')
-const { randomSync } = gen
 test('generate random number', async t => {
   try {
-    const n = await gen(1, 7)
+    const n = await randomNumber(1, 7)
     console.info('Random', n)
     t.ok(n >= 1)
     t.ok(n <= 7)
   } catch (err) {
     t.error(err)
   }
-  t.end()
-})
-
-// Async is cool but sometimes a synchronized variant is required
-// as a drop-in replacement for Math.random()
-test('generate syncronized random number', t => {
-  try {
-    const n = randomSync(1, 7)
-    console.info('Random', n)
-    t.ok(n >= 1)
-    t.ok(n <= 7)
-  } catch (err) {
-    t.error(err)
-  }
-  t.end()
 })
 
 test('distribution', async t => {
@@ -40,7 +26,7 @@ test('distribution', async t => {
       }
     }
     for (let i = 0; i < nTries; i++) {
-      const n = await gen(10, 30)
+      const n = await randomNumber(10, 30)
       if (!stats[n]) stats[n] = 0
       ++stats[n]
       if (!(i % interval)) {
@@ -48,8 +34,7 @@ test('distribution', async t => {
         printStats(i)
       }
     }
-    console.log('Final distribution')
+    console.log('Final distribution (optimal 1/21 = 4.7619%')
     printStats(nTries)
   } catch (err) { t.error(err) }
-  t.end()
 })

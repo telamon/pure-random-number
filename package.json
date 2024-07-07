@@ -1,8 +1,9 @@
 {
   "name": "pure-random-number",
-  "version": "2.1.0",
+  "version": "3.0.0",
   "description": "A cryptographically secure generator for random numbers in a range.",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "tape test.js",
     "lint": "standard",
@@ -20,9 +21,9 @@
     "crypto"
   ],
   "author": "Tony Ivanov",
-  "license": "AGPL-3.0-or-later",
+  "license": "Apache-2.0",
   "devDependencies": {
-    "standard": "^14.3.3",
+    "standard": "^17.1.0",
     "tape": "^5.0.0"
   }
 }
